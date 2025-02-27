@@ -29,20 +29,22 @@ export default function TypingTest() {
     return () => clearInterval(interval)
   }, [isActive, time])
 
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.scrollTop = textareaRef.current.scrollHeight
-    }
-  }, [])
+
 
   useEffect(() => {
     if (textareaRef.current) {
       const textarea = textareaRef.current
-      textarea.style.height = 'auto'
       textarea.style.height = `${textarea.scrollHeight}px`
     }
   }, [typedText])
 
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = '40px'
+      textareaRef.current.scrollTop = 0
+    }
+  }, [])
+  
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60)
     const remainingSeconds = seconds % 60
@@ -88,20 +90,20 @@ export default function TypingTest() {
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center px-4 relative">
-        <div className="w-2/5 h-48 absolute bottom-[40vh] px-4 flex items-end">
+        <div 
+          className="w-2/5 h-48 absolute bottom-[40vh] px-4 flex items-end"
+          style={{
+            maskImage: "linear-gradient(to top, black 10%, transparent 80%)",
+            WebkitMaskImage: "linear-gradient(to top, black 10%, transparent 80%)"
+          }}>
           <textarea
             ref={textareaRef}
             value={typedText}
             onChange={handleTyping}
-            className="w-full max-h-48 text-gray-700 bg-transparent text-xl sm:text-2xl border-none focus:outline-none text-center font-serif resize-none overflow-hidden
+            className="w-full max-h-48 text-gray-700 bg-transparent text-xl sm:text-2xl border-none focus:outline-none focus:ring-0 text-center font-serif resize-none overflow-hidden
               selection:bg-gray-800 selection:text-[#FFE5D9]"
             spellCheck={false}
             autoComplete="off"
-            style={{
-              caretColor: "black",
-              maskImage: "linear-gradient(to top, black 10%, transparent 100%)",
-              WebkitMaskImage: "linear-gradient(to top, black 10%, transparent 100%)",
-            }}
           />
         </div>
       </div>
