@@ -83,15 +83,16 @@ export default function TypingTest() {
       onMouseMove={handleMouseMove}
       onClick={() => textareaRef.current?.focus()}
     >
-      <div className={`p-4 transition-opacity duration-300 ${showIcons ? "opacity-100" : "opacity-0"}`}>
+      <div className={`p-4 space-x-4 transition-opacity duration-300 ${showIcons ? "opacity-100" : "opacity-0"}`}>
         <Button variant="ghost" size="icon" className="hover:bg-transparent" onClick={copyToClipboard}>
           <Copy className="h-4 w-4 text-gray-500" />
         </Button>
+        <span className="text-xl text-gray-700 font-serif">{formatTime(time)}</span>
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center px-4 relative">
         <div 
-          className="w-2/5 h-48 absolute bottom-[40vh] px-4 flex items-end"
+          className="w-2/5 h-28 absolute bottom-[40vh] px-4 flex items-end"
           style={{
             maskImage: "linear-gradient(to top, black 10%, transparent 80%)",
             WebkitMaskImage: "linear-gradient(to top, black 10%, transparent 80%)"
@@ -100,7 +101,7 @@ export default function TypingTest() {
             ref={textareaRef}
             value={typedText}
             onChange={handleTyping}
-            className="w-full max-h-48 text-gray-700 bg-transparent text-xl sm:text-2xl border-none focus:outline-none focus:ring-0 text-center font-serif resize-none overflow-hidden
+            className="w-full max-h-28 text-gray-800 bg-transparent text-xl sm:text-2xl border-none focus:outline-none focus:ring-0 text-center font-serif resize-none overflow-hidden
               selection:bg-gray-800 selection:text-[#FFE5D9]"
             spellCheck={false}
             autoComplete="off"
@@ -109,9 +110,8 @@ export default function TypingTest() {
       </div>
 
       <div className={`p-4 text-right transition-opacity duration-300`}>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-end items-center">
           <span className="text-xl text-gray-700 font-serif">{wordCount}</span>
-          <span className="text-xl text-gray-700 font-serif">{formatTime(time)}</span>
         </div>
       </div>
 
