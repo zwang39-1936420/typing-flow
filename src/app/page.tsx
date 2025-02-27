@@ -11,8 +11,10 @@ export default function TypingTest() {
   const [isActive, setIsActive] = useState(false)
   const [typedText, setTypedText] = useState("")
   const [showIcons, setShowIcons] = useState(false)
+  const [wordCount, setWordCount] = useState(0)
   const audioRef = useRef<HTMLAudioElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     let interval: NodeJS.Timeout
@@ -33,6 +35,14 @@ export default function TypingTest() {
     }
   }, [])
 
+  useEffect(() => {
+    if (textareaRef.current) {
+      const textarea = textareaRef.current
+      textarea.style.height = 'auto'
+      textarea.style.height = `${textarea.scrollHeight}px`
+    }
+  }, [typedText])
+
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60)
     const remainingSeconds = seconds % 60
@@ -50,17 +60,25 @@ export default function TypingTest() {
       handleStart()
     }
     setTypedText(e.target.value)
+    // Calculate word count
+    const words = e.target.value.trim().split(/\s+/)
+    setWordCount(e.target.value.trim() === "" ? 0 : words.length)
   }
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(typedText)
   }
 
+  const handleMouseMove = () => {
+    setShowIcons(true)
+    if (inactivityTimer) clearTimeout(inactivityTimer)
+    setInactivityTimer(setTimeout(() => setShowIcons(false), 5000))
+  }
+
   return (
     <div
       className="min-h-screen w-full bg-gradient-to-br from-[#FFE5D9] to-[#E8FAE6] flex flex-col"
-      onMouseEnter={() => setShowIcons(true)}
-      onMouseLeave={() => setShowIcons(false)}
+      onMouseMove={handleMouseMove}
       onClick={() => textareaRef.current?.focus()}
     >
       <div className={`p-4 transition-opacity duration-300 ${showIcons ? "opacity-100" : "opacity-0"}`}>
@@ -69,14 +87,14 @@ export default function TypingTest() {
         </Button>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center px-4">
-        <div className="w-2/5 h-24 relative overflow-hidden">
-          <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-transparent via-transparent opacity-30 z-10" />
+      <div className="flex-1 flex flex-col items-center justify-center px-4 relative">
+        <div className="w-2/5 h-48 absolute bottom-[40vh] px-4 flex items-end">
           <textarea
             ref={textareaRef}
             value={typedText}
             onChange={handleTyping}
-            className="w-full h-full text-gray-700 bg-transparent text-xl sm:text-2xl border-none focus:outline-none text-center font-serif resize-none overflow-hidden select-none"
+            className="w-full max-h-48 text-gray-700 bg-transparent text-xl sm:text-2xl border-none focus:outline-none text-center font-serif resize-none overflow-hidden
+              selection:bg-gray-800 selection:text-[#FFE5D9]"
             spellCheck={false}
             autoComplete="off"
             style={{
@@ -88,8 +106,11 @@ export default function TypingTest() {
         </div>
       </div>
 
-      <div className={`p-4 text-right transition-opacity duration-300 ${showIcons ? "opacity-100" : "opacity-0"}`}>
-        <span className="text-xl text-gray-700 font-serif">{formatTime(time)}</span>
+      <div className={`p-4 text-right transition-opacity duration-300`}>
+        <div className="flex justify-between items-center">
+          <span className="text-xl text-gray-700 font-serif">{wordCount}</span>
+          <span className="text-xl text-gray-700 font-serif">{formatTime(time)}</span>
+        </div>
       </div>
 
       <audio ref={audioRef} src="/notification.wav" />
